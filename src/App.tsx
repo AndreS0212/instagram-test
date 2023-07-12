@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const CLIENT_ID: number = 302527272340249;
-const REDIRECT_URI: string = 'https://5aea-179-6-161-104.ngrok-free.app/';
+const REDIRECT_URI: string = 'https://andres0212.github.io/instagram-test/';
 
 type user = {
   id: string;
