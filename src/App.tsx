@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { Query, useQuery } from '@tanstack/react-query';
+
 export interface Data {
   userData: UserData
   media: Media[]
@@ -36,23 +38,35 @@ const InstagramAuth = () => {
     []
   )
 
+
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   }
 
-
-  const handleGetInfo = async (searchValue: string) => {
-    const response = await axios.post('https://instagram-test.onrender.com/instagram/', {
-      username: searchValue,
+  const { refetch } = useQuery<Data, Error>(
+    ['instagram', searchValue],
+    async () => {
+      const { data } = await axios.post(`https://q6xp8fus12.execute-api.us-east-2.amazonaws.com/scrapingPy`, { username: searchValue },
+        { headers: { 'Content-Type': 'application/json' } });
+      return data;
+    },
+    {
+      onSuccess: (data) => {
+        setUserData(data.userData);
+        setGalleryData(data.media);
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+      staleTime: 1000 * 60 * 60 * 24 * 7,
+      enabled: false,
     }
-    );
-    setUserData(response.data.userData);
-    setGalleryData(response.data.media);
-    console.log(response.data)
-  }
+  )
+
   const handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      handleGetInfo(searchValue);
+      refetch();
     }
   }
   //390x390

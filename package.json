@@ -11,6 +11,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@tanstack/react-query": "^4.29.25",
     "autoprefixer": "^10.4.14",
     "axios": "^1.4.0",
     "date-fns": "^2.30.0",
