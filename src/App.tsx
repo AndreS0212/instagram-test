@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
-import { format } from 'date-fns';
 export interface Data {
   userData: UserData
   media: Media[]
@@ -9,13 +8,17 @@ export interface UserData {
   name: string
   biography: string
   followers: number
-  profile_pic_url: string
+  img_profile_url: string
+  username: string
+  profile_url: string
 }
 
 export interface Media {
   display_url: string
   caption: string
   is_video?: boolean
+  mediaId: string
+  imgUrl: string
 }
 
 const InstagramAuth = () => {
@@ -24,7 +27,10 @@ const InstagramAuth = () => {
     name: '',
     biography: '',
     followers: 0,
-    profile_pic_url: ''
+    img_profile_url: '',
+    profile_url: '',
+    username: '',
+
   });
   const [galleryData, setGalleryData] = useState<Media[]>(
     []
@@ -33,8 +39,10 @@ const InstagramAuth = () => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   }
+
+
   const handleGetInfo = async (searchValue: string) => {
-    const response = await axios.post('http://localhost:3000/instagram/', {
+    const response = await axios.post('https://instagram-test.onrender.com/instagram/', {
       username: searchValue,
     }
     );
@@ -42,53 +50,62 @@ const InstagramAuth = () => {
     setGalleryData(response.data.media);
     console.log(response.data)
   }
-
+  const handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleGetInfo(searchValue);
+    }
+  }
   //390x390
-
+  function formatNumber(number: number): string {
+    if (number >= 1000000) {
+      // Formato en millones
+      return (number / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "M";
+    } else if (number >= 1000) {
+      // Formato en miles
+      return (number / 1000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "K";
+    } else {
+      // Número sin formato
+      return number.toString();
+    }
+  }
 
   return (
-    <div className="container mx-auto px-4 py-8" >
-      <h1 className="text-2xl font-bold mb-4">Instagram Info</h1>
-      <div className='flex flex-col justify-center'>
-        <input className='mb-2' type="text" onChange={handleSearchChange} value={searchValue} placeholder='Ingrese link o usuario de instagram' />
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={() => handleGetInfo(searchValue)}
-        >
-          Get User Data
-        </button>
-      </div>
+    <div className={`max-w-[390px] ${userData.name ? 'h-[390px]' : ''} flex flex-col max-h-[390px] mx-auto my-12 p-4 justify-center shadow-2xl rounded-3xl bg-white`}>
+      {!userData.name && <div className="flex flex-row">
+        <img src='/src/assets/instagram-logo.svg ' alt="Instagram Icon" className="h-[30px] mb-1" />
+        <input className=" flex mx-3 max-w-[85%] w-[85%] outline-none" type="text" placeholder="@usuario or www.instagram.com/usuario" onKeyDown={handleOnKeyDown} onChange={handleSearchChange} value={searchValue} />
+      </div>}
+      {userData.name && <div>
+        <div className="text-center">
+          <div className="flex flex-row justify-around items-center mb-1">
+            <a href={userData.profile_url} target="_blank" rel="noopener noreferrer">
+              <div className="flex flex-col">
+                <p className="mb-1 text-lg ">{userData.name}</p>
+                <p className="mb-2 text-md">{'Followers: ' + formatNumber(userData.followers)}</p>
+              </div>
+            </a>
+            <a href={userData.profile_url} target="_blank" rel="noopener noreferrer">
+              <img src={userData.img_profile_url} alt="Cristiano Ronaldo" className="h-[90px] w-fit rounded-md" />
+            </a>
+          </div>
+          {userData.biography && <div className="h-[40px] flex items-center justify-center">
+            <p className="text-sm line-clamp-2 ">{userData.biography}</p>
+          </div>}
+        </div>
+        <div className={`${galleryData.length == 1 ? 'mt-8' : 'mt-[10px]'} flex flex-wrap justify-around`}>
+          {galleryData && galleryData.slice(0, 6).map((item: Media) => (
+            <div className={`mb-2 ${galleryData.slice(0, 6).length === 2 ? '' : galleryData.slice(0, 6).length === 1 ? 'h-[180px]' : 'w-[29%]'}`} key={item.display_url}>
+              <a href={item.imgUrl} target="_blank" rel="noopener noreferrer">
+                <img src={item.display_url} alt={item.caption} className="w-full h-full rounded-md border border-gray-300" />
+              </a>
+            </div>
+          ))}
+        </div>
 
-      <div className="mt-4">
-        {userData && (
-          <div>
-            <p className="mb-2 text-xl">
-              Name: {userData.name}
-            </p>
-            <p className="mb-2 text-xl">
-              Biography: {userData.biography}
-            </p>
-            <p className="mb-2 text-xl">
-              Followers: {userData.followers}
-            </p>
-            <img src={userData.profile_pic_url} alt={userData.name} className="max-w-sm" />
-          </div>
-        )}
-      </div>
-      <img src="https://z-p42-instagram.flim4-3.fna.fbcdn.net/v/t51.2885-15/359524075_2919230984879522_260347177607472215_n.jpg?stp=dst-jpg_e35_s640x640_sh0.08&_nc_ad=z-m&_nc_ht=z-p42-instagram.flim4-3.fna.fbcdn.net&_nc_cat=102&_nc_ohc=BX41cUJsnWUAX8UVPyG&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AfBFaLd1IznkTSySQ0g21laPVX67_bqeCY2IVUYYeWd-PA&oe=64B450AA&_nc_sid=8b3546" alt="Image">
-      </img>
-      <div className="mt-4 flex flex-row">
-        {galleryData && galleryData.map((item: Media) => (
-          <div className="flex flex-col justify-center items-center mx-2">
-            <img src={item.display_url} alt={item.caption} className="max-w-sm" />
-            <p className="mb-2 text-xl">
-              {item.caption}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div >
-  );
-};
+
+      </div>}
+    </div>
+  )
+}
 
 export default InstagramAuth;
