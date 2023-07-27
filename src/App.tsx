@@ -6,7 +6,7 @@ import UserProfile from './components/UserProfile';
 import Gallery from './components/Gallery';
 import { UserData, Data } from './types';
 
-const InstagramAuth = () => {
+const App = () => {
   const [searchValue, setSearchValue] = useState('');
   const [userData, setUserData] = useState<UserData>({
     name: '',
@@ -70,4 +70,4 @@ const InstagramAuth = () => {
   )
 }
 
-export default InstagramAuth;
+export default App;
