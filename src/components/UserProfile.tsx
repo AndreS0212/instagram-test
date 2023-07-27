@@ -1,4 +1,5 @@
 import { UserData } from "../types";
+import instagramIcon from "../assets/instagram-logo.svg";
 import { formatNumber } from "../utils";
 interface Props {
     userData: UserData
@@ -9,9 +10,10 @@ const UserProfile = ({ userData }: Props) => {
         <div className="text-center">
             <div className="flex flex-row justify-around items-center mb-1">
                 <a href={userData.profile_url} target="_blank" rel="noopener noreferrer">
-                    <div className="flex flex-col">
-                        <p className="mb-1 text-lg ">{userData.name}</p>
-                        <p className="mb-2 text-md">{'Followers: ' + formatNumber(userData.followers)}</p>
+                    <div className="flex flex-col items-center">
+                        <img src={instagramIcon} alt="instagram icon" className="h-[35x] w-[35px] mb-1" />
+                        <p className="text-lg ">{userData.name}</p>
+                        <p className="text-sm">{'Followers: ' + formatNumber(userData.followers)}</p>
                     </div>
                 </a>
                 <a href={userData.profile_url} target="_blank" rel="noopener noreferrer">

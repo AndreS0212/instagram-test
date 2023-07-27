@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import Search from './components/Search';
 import UserProfile from './components/UserProfile';
 import Gallery from './components/Gallery';
@@ -25,11 +25,16 @@ const InstagramAuth = () => {
     setSearchValue(e.target.value);
   }
 
-  const { refetch } = useQuery<Data, Error>(
+  const { mutate } = useMutation<Data, Error>(
     ['instagram', searchValue],
     async () => {
-      const { data } = await axios.post(`https://q6xp8fus12.execute-api.us-east-2.amazonaws.com/scrapingPy`, { username: searchValue },
-        { headers: { 'Content-Type': 'application/json' } });
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/instagram`, { username: searchValue },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${import.meta.env.VITE_BACKEND_TOKEN}`
+          }
+        });
       return data;
     },
     {
@@ -42,17 +47,14 @@ const InstagramAuth = () => {
       onError: (error) => {
         console.log(error);
       },
-      staleTime: 1000 * 60 * 60 * 24 * 7,
-      enabled: false,
     }
   )
 
   const handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      refetch();
+      mutate();
     }
   }
-  //390x390
 
 
   return (
