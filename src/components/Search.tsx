@@ -7,7 +7,7 @@ interface Props {
 const Search = ({ value, onChange, onKeyDown }: Props) => {
     return (
         <div className="flex flex-row">
-            <img src='/src/assets/instagram-logo.svg' alt="Instagram Icon" className="h-[30px] mb-1" />
+            <img src='/instagram-logo.svg' alt="Instagram Icon" className="h-[30px] mb-1" />
             <input className="flex mx-3 max-w-[85%] w-[85%] outline-none" type="text" placeholder="@usuario or www.instagram.com/usuario" onKeyDown={onKeyDown} onChange={onChange} value={value} />
         </div>
     );

@@ -25,7 +25,7 @@ const App = () => {
     setSearchValue(e.target.value);
   }
 
-  const { mutate } = useMutation<Data, Error>(
+  const { mutate, isLoading } = useMutation<Data, Error>(
     ['instagram', searchValue],
     async () => {
       const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/instagram`, { username: searchValue },
@@ -59,13 +59,13 @@ const App = () => {
 
   return (
     <div className={`max-w-[390px] ${userData.name ? 'h-[390px]' : ''} flex flex-col max-h-[390px] mx-auto my-12 p-4 justify-center shadow-2xl rounded-3xl bg-white`}>
-      {!userData.name && <Search value={searchValue} onChange={handleSearchChange} onKeyDown={handleOnKeyDown} />}
-      {userData.name && (
-        <div>
+
+      {isLoading ? (<><p className='text-center text-lg font-bold'>Loading...</p></>) :
+        (userData.name ? (<div>
           <UserProfile userData={userData} />
           <Gallery galleryData={userData?.gallery} />
-        </div>
-      )}
+        </div>) : (<Search value={searchValue} onChange={handleSearchChange} onKeyDown={handleOnKeyDown} />))
+      }
     </div>
   )
 }
